@@ -917,6 +917,7 @@ public class KafkaConsumer<K, V> implements Consumer<K, V> {
      */
     @Override
     public void subscribe(Collection<String> topics, ConsumerRebalanceListener listener) {
+        //acquireAndEnsureOpen() 和 try-finally release()，作用就是保护这个方法只能单线程调用
         acquireAndEnsureOpen();
         try {
             maybeThrowInvalidGroupIdException();
@@ -934,7 +935,9 @@ public class KafkaConsumer<K, V> implements Consumer<K, V> {
                 throwIfNoAssignorsConfigured();
                 fetcher.clearBufferedDataForUnassignedTopics(topics);
                 log.info("Subscribed to topic(s): {}", Utils.join(topics, ", "));
+                //重置订阅状态，订阅状态 subscriptions 主要维护了订阅的 topic 和 patition 的消费位置等状态信息
                 this.subscriptions.subscribe(new HashSet<>(topics), listener);
+                //更新元数据。属性 metadata 中维护了 Kafka 集群元数据的一个子集，包括集群的 Broker 节点、Topic 和 Partition 在节点上分布，以及Coordinator 给 Consumer 分配的 Partition 信息
                 metadata.setTopics(subscriptions.groupSubscription());
             }
         } finally {
@@ -1188,6 +1191,7 @@ public class KafkaConsumer<K, V> implements Consumer<K, V> {
                 client.maybeTriggerWakeup();
 
                 if (includeMetadataInTimeout) {
+                    //更新元数据
                     if (!updateAssignmentMetadataIfNeeded(timer)) {
                         return ConsumerRecords.empty();
                     }
@@ -1196,7 +1200,7 @@ public class KafkaConsumer<K, V> implements Consumer<K, V> {
                         log.warn("Still waiting for metadata");
                     }
                 }
-
+                //拉取消息
                 final Map<TopicPartition, List<ConsumerRecord<K, V>>> records = pollForFetches(timer);
                 if (!records.isEmpty()) {
                     // before returning the fetched records, we can send off the next round of fetches

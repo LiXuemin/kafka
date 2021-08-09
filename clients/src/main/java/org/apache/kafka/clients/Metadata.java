@@ -166,6 +166,7 @@ public class Metadata implements Closeable {
     /**
      * Request an update of the current cluster metadata info, return the current version before the update
      */
+    //在订阅的实现过程中,将元数据状态置为“需要立即更新”，但是并没有真正发送更新元数据的请求，整个过程没有和集群有任何网络数据交换
     public synchronized int requestUpdate() {
         this.needUpdate = true;
         return this.updateVersion;

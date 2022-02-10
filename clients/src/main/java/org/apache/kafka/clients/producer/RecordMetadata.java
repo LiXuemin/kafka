@@ -142,4 +142,12 @@ public final class RecordMetadata {
     public String toString() {
         return topicPartition.toString() + "@" + offset;
     }
+
+    /**
+     * 加入打印方法，方便调试
+     * */
+    public String print() {
+        return "RecordMetadata{" + "offset=" + offset + ", timestamp=" + timestamp + ", serializedKeySize=" + serializedKeySize
+            + ", serializedValueSize=" + serializedValueSize + ", topicPartition=" + topicPartition + ", checksum=" + checksum + '}';
+    }
 }

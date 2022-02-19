@@ -442,9 +442,14 @@ public class ProducerConfig extends AbstractConfig {
         return refinedConfigs;
     }
 
+    /**
+     * 生成clientID
+     * */
     private void maybeOverrideClientId(final Map<String, Object> configs) {
         String refinedClientId;
+        //用户是否配置了clientId，Kafka的命名真美锕
         boolean userConfiguredClientId = this.originals().containsKey(CLIENT_ID_CONFIG);
+        //若已配置则使用用户指定clientId，否则按规则拼接"producer-" + transactionalId或者递增ID
         if (userConfiguredClientId) {
             refinedClientId = this.getString(CLIENT_ID_CONFIG);
         } else {

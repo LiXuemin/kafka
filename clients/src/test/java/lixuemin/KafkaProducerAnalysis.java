@@ -1,5 +1,6 @@
 package lixuemin;
 
+import java.util.HashSet;
 import java.util.Properties;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -44,8 +45,6 @@ public class KafkaProducerAnalysis {
             //});
         } catch (Exception e) {
             LOGGER.error("send message error", e);
-        } finally {
-            producer.close();
         }
     }
 }

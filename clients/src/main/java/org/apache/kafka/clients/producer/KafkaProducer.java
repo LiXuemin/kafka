@@ -948,7 +948,7 @@ public class KafkaProducer<K, V> implements Producer<K, V> {
             long nowMs = time.milliseconds();
             ClusterAndWaitTime clusterAndWaitTime;
             try {
-                //获取Kafka集群信息，唤醒send线程更新metadata中保存的kafka集群元数据
+                //唤醒send线程更新metadata中保存的kafka集群元数据
                 clusterAndWaitTime = waitOnMetadata(record.topic(), record.partition(), nowMs, maxBlockTimeMs);
             } catch (KafkaException e) {
                 if (metadata.isClosed())
@@ -957,6 +957,7 @@ public class KafkaProducer<K, V> implements Producer<K, V> {
             }
             nowMs += clusterAndWaitTime.waitedOnMetadataMs;
             long remainingWaitMs = Math.max(0, maxBlockTimeMs - clusterAndWaitTime.waitedOnMetadataMs);
+            //获取Kafka集群信息
             Cluster cluster = clusterAndWaitTime.cluster;
             //key,value序列化
             byte[] serializedKey;

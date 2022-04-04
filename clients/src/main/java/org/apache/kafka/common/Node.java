@@ -20,6 +20,7 @@ import java.util.Objects;
 
 /**
  * Information about a Kafka node
+ * 表示集群中的一个节点，Node记录节点的host,port信息 ip?
  */
 public class Node {
 

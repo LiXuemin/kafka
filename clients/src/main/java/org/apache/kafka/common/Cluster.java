@@ -35,15 +35,21 @@ import java.util.Set;
 public final class Cluster {
 
     private final boolean isBootstrapConfigured;
+    //集群中节点列表信息
     private final List<Node> nodes;
     private final Set<String> unauthorizedTopics;
     private final Set<String> invalidTopics;
     private final Set<String> internalTopics;
     private final Node controller;
+    //TopicPartition与PartitionInfo的映射关系
     private final Map<TopicPartition, PartitionInfo> partitionsByTopicPartition;
+    //记录Topic名称和PartitionInfo的映射关系，可以按照Topic名称查询其中全部分区
     private final Map<String, List<PartitionInfo>> partitionsByTopic;
+    //Topic和有leader副本的PartitionInfo映射关系
     private final Map<String, List<PartitionInfo>> availablePartitionsByTopic;
+    //记录了Node与PartitionInfo的映射关系
     private final Map<Integer, List<PartitionInfo>> partitionsByNode;
+    //保存brokerId与node节点之间对应关系
     private final Map<Integer, Node> nodesById;
     private final ClusterResource clusterResource;
     private final Map<String, Uuid> topicIds;
@@ -225,7 +231,7 @@ public final class Cluster {
     }
 
     /**
-     * @return The known set of nodes
+     * @return The known set of nodes Kafka集群中节点列表
      */
     public List<Node> nodes() {
         return this.nodes;

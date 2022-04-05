@@ -959,7 +959,7 @@ public class KafkaProducer<K, V> implements Producer<K, V> {
             long remainingWaitMs = Math.max(0, maxBlockTimeMs - clusterAndWaitTime.waitedOnMetadataMs);
             //获取Kafka集群信息
             Cluster cluster = clusterAndWaitTime.cluster;
-            //key,value序列化
+            //key,value序列化, 传headers似乎没用,似乎都只是序列化data,即最后一个参数
             byte[] serializedKey;
             try {
                 serializedKey = keySerializer.serialize(record.topic(), record.headers(), record.key());
@@ -976,7 +976,7 @@ public class KafkaProducer<K, V> implements Producer<K, V> {
                         " to class " + producerConfig.getClass(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG).getName() +
                         " specified in value.serializer", cce);
             }
-            //选择分区
+            //选择分区. 优先使用指定分区，若为null则使用默认分区器
             int partition = partition(record, serializedKey, serializedValue, cluster);
             tp = new TopicPartition(record.topic(), partition);
 

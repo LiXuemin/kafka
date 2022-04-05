@@ -416,6 +416,7 @@ public class AbstractConfig {
     }
 
     /**
+     * 通过反射构造出来的对象，都是通过无参构造函数构造的，需要初始化的字段个数和类型各式各样
      * Get a configured instance of the give class specified by the given configuration key. If the object implements
      * Configurable configure it using the configuration.
      *

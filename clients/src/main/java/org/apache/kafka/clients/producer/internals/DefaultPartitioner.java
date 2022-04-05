@@ -27,7 +27,7 @@ import java.util.Map;
  * <ul>
  * <li>If a partition is specified in the record, use it
  * <li>If no partition is specified but a key is present choose a partition based on a hash of the key
- * <li>If no partition or key is present choose the sticky partition that changes when the batch is full.
+ * <li>If no partition or key is present choose the sticky partition that changes when the batch is full. 根据counter与partition个数取模来确定分区编号，count不断递增，确保消息不会都发到同一个partition里
  * 
  * See KIP-480 for details about sticky partitioning.
  */

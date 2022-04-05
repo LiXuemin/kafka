@@ -948,7 +948,7 @@ public class KafkaProducer<K, V> implements Producer<K, V> {
             long nowMs = time.milliseconds();
             ClusterAndWaitTime clusterAndWaitTime;
             try {
-                //唤醒send线程更新metadata中保存的kafka集群元数据
+                //唤醒send线程更新metadata中保存的kafka集群元数据,阻塞主线程等待更新完毕
                 clusterAndWaitTime = waitOnMetadata(record.topic(), record.partition(), nowMs, maxBlockTimeMs);
             } catch (KafkaException e) {
                 if (metadata.isClosed())
@@ -1068,12 +1068,12 @@ public class KafkaProducer<K, V> implements Producer<K, V> {
     private ClusterAndWaitTime waitOnMetadata(String topic, Integer partition, long nowMs, long maxWaitMs) throws InterruptedException {
         // add topic to metadata topic list if it is not there already and reset expiry
         Cluster cluster = metadata.fetch();
-
+        //检查是否不可用
         if (cluster.invalidTopics().contains(topic))
             throw new InvalidTopicException(topic);
-
+        //检查metadata中是否包含指定topic元数据，若不包含，则将topic添加到topics集合中，下次更新时会从服务端获取指定topic的元数据
         metadata.add(topic, nowMs);
-
+        //获取topic的分区数，若与参数传递中该有的分区数不符，返回
         Integer partitionsCount = cluster.partitionCountForTopic(topic);
         // Return cached metadata if we have it, and if the record's partition is either undefined
         // or within the known partition range
@@ -1092,9 +1092,12 @@ public class KafkaProducer<K, V> implements Producer<K, V> {
                 log.trace("Requesting metadata update for topic {}.", topic);
             }
             metadata.add(topic, nowMs + elapsed);
+            // 根据topic更新分区，或者全部更新
             int version = metadata.requestUpdateForTopic(topic);
+            // 唤醒sender，由sender更新metadata中保存的kafka集群元数据
             sender.wakeup();
             try {
+                // 调用awaitUpdate方法，等待sender线程完成更新
                 metadata.awaitUpdate(version, remainingWaitMs);
             } catch (TimeoutException ex) {
                 // Rethrow with original maxWaitMs to prevent logging exception with remainingWaitMs

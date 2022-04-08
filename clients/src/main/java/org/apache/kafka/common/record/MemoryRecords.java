@@ -44,10 +44,13 @@ import java.util.Objects;
  * modifying in-place an existing buffer of record batches. To create a new buffer see {@link MemoryRecordsBuilder},
  * or one of the {@link #builder(ByteBuffer, byte, CompressionType, TimestampType, long)} variants.
  */
+/**
+ * 表示多个消息的集合，封装了Java NIO ByteBuffer用来保存消息数据
+ * */
 public class MemoryRecords extends AbstractRecords {
     private static final Logger log = LoggerFactory.getLogger(MemoryRecords.class);
     public static final MemoryRecords EMPTY = MemoryRecords.readableRecords(ByteBuffer.allocate(0));
-
+    //用来保存消息
     private final ByteBuffer buffer;
 
     private final Iterable<MutableRecordBatch> batches = this::batchIterator;
@@ -60,6 +63,7 @@ public class MemoryRecords extends AbstractRecords {
         this.buffer = buffer;
     }
 
+    //buffer字段最多可以写入多少字节数据
     @Override
     public int sizeInBytes() {
         return buffer.limit();

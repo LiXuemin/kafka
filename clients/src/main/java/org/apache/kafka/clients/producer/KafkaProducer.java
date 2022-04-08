@@ -996,7 +996,7 @@ public class KafkaProducer<K, V> implements Producer<K, V> {
             if (transactionManager != null && transactionManager.isTransactional()) {
                 transactionManager.failIfNotReadyForSend();
             }
-            //追加消息到RecordAccumulator中
+            //追加消息到RecordAccumulator中.将消息放到RecordAccumulator中暂存，然后返回。由sender发送RecordAccumulator中的消息。
             RecordAccumulator.RecordAppendResult result = accumulator.append(tp, timestamp, serializedKey,
                     serializedValue, headers, interceptCallback, remainingWaitMs, true, nowMs);
 

@@ -70,6 +70,7 @@ public final class RecordAccumulator {
     private final AtomicInteger flushesInProgress;
     private final AtomicInteger appendsInProgress;
     private final int batchSize;
+    //压缩类型
     private final CompressionType compression;
     private final int lingerMs;
     private final long retryBackoffMs;
@@ -77,6 +78,8 @@ public final class RecordAccumulator {
     private final BufferPool free;
     private final Time time;
     private final ApiVersions apiVersions;
+    //ArrayDeque线程不安全，缓存了发往对应TopicPartition的消息，会有加锁处理过程。
+    //RecordAccumulator -> ProducerBatch -> MemoryRecordsBuilder.build()
     private final ConcurrentMap<TopicPartition, Deque<ProducerBatch>> batches;
     private final IncompleteBatches incomplete;
     // The following variables are only accessed by the sender thread, so we don't need to protect them.
